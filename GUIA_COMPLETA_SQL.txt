@@ -1,0 +1,432 @@
+====================================================================
+GUÍA COMPLETA DE SQL - MANUAL DE REFERENCIA Y ESTUDIO
+====================================================================
+
+Este archivo contiene explicaciones detalladas de todos los conceptos de SQL
+que aparecen en tus archivos de práctica. Úsalo como manual de consulta
+cuando tengas dudas sobre cualquier concepto.
+
+====================================================================
+1. BASES DE DATOS Y TABLAS
+====================================================================
+
+¿QUÉ ES UNA BASE DE DATOS?
+Una base de datos es un conjunto organizado de información que se almacena
+de manera estructurada para facilitar su acceso, gestión y actualización.
+
+CREAR UNA BASE DE DATOS:
+- CREATE DATABASE: Crea una nueva base de datos
+- USE: Selecciona qué base de datos usar para las operaciones siguientes
+
+TIPOS DE DATOS COMUNES:
+- INT: Números enteros
+- VARCHAR(n): Texto variable hasta n caracteres
+- DECIMAL(p,s): Números decimales con p dígitos totales y s decimales
+- DATE: Fechas (YYYY-MM-DD)
+- DATETIME: Fecha y hora
+- TIME: Solo hora
+
+RESTRICCIONES (CONSTRAINTS):
+- PRIMARY KEY: Identifica únicamente cada registro en la tabla
+- FOREIGN KEY: Enlaza con la clave primaria de otra tabla
+- NOT NULL: El campo no puede estar vacío
+- CHECK: Valida que los datos cumplan una condición específica
+- DEFAULT: Valor por defecto si no se especifica uno
+
+IDENTITY:
+- IDENTITY(inicio, incremento): Crea un campo que se incrementa automáticamente
+- Ejemplo: IDENTITY(1,10) comienza en 1 y aumenta de 10 en 10
+
+====================================================================
+2. CONSULTAS BÁSICAS (SELECT)
+====================================================================
+
+SELECT es el comando más importante en SQL. Te permite consultar datos.
+
+SINTAXIS BÁSICA:
+SELECT columnas FROM tabla WHERE condiciones;
+
+COMPONENTES:
+- SELECT: Especifica qué columnas quieres ver
+- FROM: Indica de qué tabla obtener los datos
+- WHERE: Establece condiciones para filtrar registros
+
+OPERADORES EN WHERE:
+- = : Igual
+- <> o != : Diferente
+- > : Mayor que
+- < : Menor que
+- >= : Mayor o igual
+- <= : Menor o igual
+- AND: Ambas condiciones deben cumplirse
+- OR: Al menos una condición debe cumplirse
+
+FUNCIONES ÚTILES:
+- DISTINCT: Elimina registros duplicados
+- * : Selecciona todas las columnas
+
+====================================================================
+3. OPERADORES ESPECIALES
+====================================================================
+
+IN:
+- Permite buscar valores dentro de una lista
+- Ejemplo: WHERE Country IN ('Mexico','USA','Brazil')
+- Es más eficiente que múltiples OR
+
+LIKE:
+- Busca patrones en texto
+- % : Representa cualquier cantidad de caracteres
+- _ : Representa exactamente un carácter
+- [lista]: Cualquier carácter de la lista
+- [^lista]: Cualquier carácter que NO esté en la lista
+
+Ejemplos de LIKE:
+- LIKE 'A%': Comienza con A
+- LIKE '%A': Termina con A
+- LIKE '%A%': Contiene A
+- LIKE 'A_B': A seguido de cualquier carácter y luego B
+- LIKE '[ABC]%': Comienza con A, B o C
+- LIKE '[^ABC]%': NO comienza con A, B o C
+
+BETWEEN:
+- Define un rango de valores
+- Ejemplo: WHERE salario BETWEEN 1000 AND 5000
+- Incluye los valores límite (1000 y 5000)
+
+====================================================================
+4. FUNCIONES DE AGREGADO
+====================================================================
+
+Las funciones de agregado realizan cálculos sobre conjuntos de datos:
+
+SUM(): Suma todos los valores
+- Ejemplo: SELECT SUM(salario) FROM empleado
+
+AVG(): Calcula el promedio
+- Ejemplo: SELECT AVG(salario) FROM empleado
+
+COUNT(): Cuenta el número de registros
+- COUNT(*): Cuenta todas las filas
+- COUNT(columna): Cuenta filas donde la columna no es NULL
+
+MAX(): Encuentra el valor máximo
+- Ejemplo: SELECT MAX(salario) FROM empleado
+
+MIN(): Encuentra el valor mínimo
+- Ejemplo: SELECT MIN(salario) FROM empleado
+
+IMPORTANTE: Las funciones de agregado se usan frecuentemente con GROUP BY
+
+====================================================================
+5. GROUP BY Y HAVING
+====================================================================
+
+GROUP BY:
+- Agrupa registros que tienen valores similares en columnas específicas
+- Se usa con funciones de agregado para obtener totales por grupo
+- Ejemplo: SELECT area, COUNT(*) FROM empleado GROUP BY area
+
+HAVING:
+- Filtra grupos DESPUÉS de que se han formado con GROUP BY
+- Es como WHERE pero para grupos
+- Solo se puede usar con GROUP BY
+- Ejemplo: SELECT area, AVG(salario) FROM empleado GROUP BY area HAVING AVG(salario) > 50000
+
+DIFERENCIA ENTRE WHERE Y HAVING:
+- WHERE: Filtra registros individuales ANTES del agrupamiento
+- HAVING: Filtra grupos DESPUÉS del agrupamiento
+
+====================================================================
+6. ORDER BY
+====================================================================
+
+ORDER BY ordena los resultados:
+
+ASC: Orden ascendente (de menor a mayor) - es el valor por defecto
+DESC: Orden descendente (de mayor a menor)
+
+Puedes ordenar por múltiples columnas:
+ORDER BY columna1 ASC, columna2 DESC
+
+ORDEN DE EJECUCIÓN DE UNA CONSULTA:
+1. FROM (selecciona la tabla)
+2. WHERE (filtra registros)
+3. GROUP BY (agrupa registros)
+4. HAVING (filtra grupos)
+5. SELECT (selecciona columnas)
+6. ORDER BY (ordena resultados)
+
+====================================================================
+7. JOINS (UNIONES DE TABLAS)
+====================================================================
+
+Los JOINS permiten combinar datos de múltiples tablas relacionadas:
+
+INNER JOIN:
+- Devuelve solo registros que tienen coincidencias en AMBAS tablas
+- Es el tipo de JOIN más común
+- Sintaxis: FROM tabla1 INNER JOIN tabla2 ON tabla1.campo = tabla2.campo
+
+LEFT JOIN:
+- Devuelve TODOS los registros de la tabla izquierda
+- Y los registros coincidentes de la tabla derecha
+- Si no hay coincidencia, pone NULL en los campos de la tabla derecha
+
+RIGHT JOIN:
+- Devuelve TODOS los registros de la tabla derecha
+- Y los registros coincidentes de la tabla izquierda
+- Si no hay coincidencia, pone NULL en los campos de la tabla izquierda
+
+FULL OUTER JOIN:
+- Devuelve TODOS los registros de AMBAS tablas
+- Pone NULL donde no hay coincidencias
+
+SELF JOIN:
+- Una tabla se une consigo misma
+- Útil para comparar registros dentro de la misma tabla
+- Ejemplo: empleados y sus jefes en la misma tabla
+
+====================================================================
+8. SUBCONSULTAS
+====================================================================
+
+Una subconsulta es una consulta dentro de otra consulta.
+
+TIPOS DE SUBCONSULTAS:
+
+Subconsulta simple:
+- Devuelve un solo valor
+- Se puede usar en WHERE, SELECT, o HAVING
+- Ejemplo: WHERE precio > (SELECT AVG(precio) FROM productos)
+
+Subconsulta con IN:
+- La subconsulta devuelve múltiples valores
+- Ejemplo: WHERE id IN (SELECT id FROM otra_tabla WHERE condicion)
+
+Subconsulta con EXISTS:
+- Verifica si la subconsulta devuelve al menos un registro
+- Es más eficiente que IN en algunos casos
+- Ejemplo: WHERE EXISTS (SELECT 1 FROM otra_tabla WHERE condicion)
+
+Subconsulta con ANY:
+- Compara con cualquier valor devuelto por la subconsulta
+- Ejemplo: WHERE campo = ANY (SELECT campo FROM tabla)
+
+Subconsulta con ALL:
+- Compara con todos los valores devueltos por la subconsulta
+- Ejemplo: WHERE campo > ALL (SELECT campo FROM tabla)
+
+====================================================================
+9. OPERADORES DE CONJUNTOS
+====================================================================
+
+Combinan resultados de múltiples consultas:
+
+UNION:
+- Combina resultados de dos consultas
+- Elimina registros duplicados automáticamente
+- Las consultas deben tener el mismo número de columnas
+- Los tipos de datos deben ser compatibles
+
+UNION ALL:
+- Como UNION pero mantiene los duplicados
+- Es más rápido que UNION porque no elimina duplicados
+
+EXCEPT:
+- Devuelve registros del primer conjunto que NO están en el segundo
+- Equivale a "A pero no B"
+
+INTERSECT:
+- Devuelve solo registros que están en AMBOS conjuntos
+- Equivale a "A y B"
+
+====================================================================
+10. VISTAS (VIEWS)
+====================================================================
+
+Una vista es una consulta guardada que se comporta como una tabla virtual.
+
+VENTAJAS DE LAS VISTAS:
+- Simplifican consultas complejas
+- Proporcionan seguridad al ocultar datos sensibles
+- Facilitan el mantenimiento del código
+- Permiten reutilizar consultas comunes
+
+CREAR UNA VISTA:
+CREATE VIEW nombre_vista AS
+SELECT columnas FROM tablas WHERE condiciones;
+
+USAR UNA VISTA:
+SELECT * FROM nombre_vista;
+
+IMPORTANTE: Puedes hacer UPDATE, INSERT, DELETE en vistas simples,
+pero las vistas complejas (con JOINs, GROUP BY, etc.) pueden ser solo de lectura.
+
+====================================================================
+11. INTEGRIDAD REFERENCIAL
+====================================================================
+
+La integridad referencial garantiza que las relaciones entre tablas sean consistentes.
+
+CLAVE FORÁNEA (FOREIGN KEY):
+- Un campo que se refiere a la clave primaria de otra tabla
+- Asegura que solo existan valores válidos
+- No puedes insertar un valor que no existe en la tabla referenciada
+
+ACCIONES DE INTEGRIDAD REFERENCIAL:
+
+ON DELETE CASCADE:
+- Si eliminas un registro padre, elimina automáticamente los registros hijos
+- Ejemplo: Si eliminas un cliente, elimina todas sus órdenes
+
+ON DELETE SET NULL:
+- Si eliminas un registro padre, pone NULL en los registros hijos
+- Ejemplo: Si eliminas un cliente, pone NULL en el campo cliente de las órdenes
+
+ON UPDATE CASCADE:
+- Si actualizas la clave primaria del padre, actualiza la clave foránea del hijo
+- Mantiene la integridad automáticamente
+
+RESTRICT/NO ACTION:
+- Impide eliminar o actualizar si hay registros relacionados
+- Es el comportamiento por defecto
+
+====================================================================
+12. MODIFICACIÓN DE DATOS
+====================================================================
+
+INSERT:
+- Agrega nuevos registros a una tabla
+- INSERT INTO tabla (columnas) VALUES (valores)
+- Puedes insertar múltiples registros en una sola instrucción
+
+UPDATE:
+- Modifica registros existentes
+- UPDATE tabla SET columna = valor WHERE condicion
+- SIEMPRE usa WHERE para evitar actualizar toda la tabla por accidente
+
+DELETE:
+- Elimina registros existentes
+- DELETE FROM tabla WHERE condicion
+- SIEMPRE usa WHERE para evitar eliminar toda la tabla por accidente
+
+IMPORTANTE: Siempre haz backup antes de hacer cambios masivos
+
+====================================================================
+13. FUNCIONES DE TEXTO
+====================================================================
+
+UPPER(): Convierte a mayúsculas
+LOWER(): Convierte a minúsculas
+SUBSTRING(texto, inicio, longitud): Extrae parte del texto
+LEN(): Devuelve la longitud del texto
+LTRIM(): Elimina espacios a la izquierda
+RTRIM(): Elimina espacios a la derecha
+CONCAT(): Une cadenas de texto
+
+====================================================================
+14. MEJORES PRÁCTICAS
+====================================================================
+
+NOMBRADO:
+- Usa nombres descriptivos para tablas y columnas
+- Usa convenciones consistentes (camelCase, snake_case, etc.)
+
+CONSULTAS:
+- Siempre usa WHERE en UPDATE y DELETE
+- Usa índices en columnas que consultas frecuentemente
+- Evita SELECT * en aplicaciones de producción
+
+RENDIMIENTO:
+- Usa INNER JOIN en lugar de subconsultas cuando sea posible
+- Limita resultados con TOP o LIMIT cuando no necesites todos
+- Usa EXISTS en lugar de IN para subconsultas grandes
+
+SEGURIDAD:
+- Nunca construyas consultas concatenando strings (usa parámetros)
+- Valida datos de entrada
+- Otorga solo los permisos mínimos necesarios
+
+====================================================================
+15. ORDEN DE APRENDIZAJE RECOMENDADO
+====================================================================
+
+Si estás empezando, aprende en este orden:
+
+1. Crear bases de datos y tablas (CREATE DATABASE, CREATE TABLE)
+2. Insertar datos (INSERT)
+3. Consultas básicas (SELECT, WHERE)
+4. Ordenar y agrupar (ORDER BY, GROUP BY, HAVING)
+5. Funciones de agregado (SUM, COUNT, AVG, etc.)
+6. JOINs (empezar con INNER JOIN)
+7. Subconsultas
+8. Vistas
+9. Modificar estructura (ALTER TABLE)
+10. Integridad referencial
+11. Temas avanzados (índices, procedimientos almacenados, etc.)
+
+====================================================================
+16. ERRORES COMUNES Y CÓMO EVITARLOS
+====================================================================
+
+1. Olvidar WHERE en UPDATE/DELETE:
+   MALO: DELETE FROM empleados
+   BUENO: DELETE FROM empleados WHERE id = 1
+
+2. Usar GROUP BY sin funciones de agregado:
+   MALO: SELECT nombre FROM empleados GROUP BY departamento
+   BUENO: SELECT departamento, COUNT(*) FROM empleados GROUP BY departamento
+
+3. Confundir WHERE con HAVING:
+   WHERE: Filtra registros individuales
+   HAVING: Filtra grupos después de GROUP BY
+
+4. Problemas con NULL:
+   - NULL no es igual a nada, ni siquiera a NULL
+   - Usa IS NULL o IS NOT NULL para comparar con NULL
+
+5. No usar alias en consultas complejas:
+   Usa alias para hacer el código más legible
+
+====================================================================
+17. COMANDOS DE REFERENCIA RÁPIDA
+====================================================================
+
+CREAR:
+CREATE DATABASE nombre;
+CREATE TABLE tabla (columna tipo restricciones);
+
+CONSULTAR:
+SELECT columnas FROM tabla WHERE condicion;
+
+MODIFICAR DATOS:
+INSERT INTO tabla VALUES (valores);
+UPDATE tabla SET columna = valor WHERE condicion;
+DELETE FROM tabla WHERE condicion;
+
+AGRUPAR Y ORDENAR:
+GROUP BY columna;
+ORDER BY columna ASC/DESC;
+HAVING condicion;
+
+JOINS:
+INNER JOIN tabla ON condicion;
+LEFT JOIN tabla ON condicion;
+
+SUBCONSULTAS:
+WHERE columna IN (SELECT...);
+WHERE EXISTS (SELECT...);
+
+====================================================================
+FIN DEL MANUAL
+====================================================================
+
+Este manual cubre todos los conceptos presentes en tus archivos de práctica.
+Guárdalo como referencia para cuando tengas dudas sobre SQL.
+
+Recuerda: La práctica es clave. Experimenta con diferentes consultas
+y siempre prueba en un entorno de desarrollo antes de trabajar con
+datos reales importantes.
+
+¡Sigue practicando y mejorando tus habilidades en SQL!
